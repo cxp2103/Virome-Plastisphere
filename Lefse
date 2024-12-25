@@ -1,0 +1,50 @@
+rm(list=ls())
+pacman::p_load(tidyverse,microeco,magrittr)
+
+feature_table <- read.csv('feature_table.csv', row.names = 1)
+sample_table <- read.csv('sample_table.csv', row.names = 1)
+tax_table <- read.csv('tax_table.csv', row.names = 1)
+
+head(feature_table)[1:6,1:6]; head(sample_table)[1:6, ]; head(tax_table)[,1:6]
+
+
+dataset <- microtable$new(sample_table = sample_table,
+                          otu_table = feature_table, 
+                          tax_table = tax_table)
+dataset
+
+lefse <- trans_diff$new(dataset = dataset, 
+                        method = "lefse", 
+                        group = "Group", 
+                        alpha = 0.01, 
+                        lefse_subgroup = NULL)
+
+head(lefse$res_diff)
+
+
+lefse$plot_diff_bar(threshold = 4)
+
+
+lefse$plot_diff_bar(use_number = 1:30, 
+                    width = 0.8, 
+                    group_order = c("CW", "IW", "TW")) +
+  ggsci::scale_color_npg() +
+  ggsci::scale_fill_npg()
+  
+
+
+lefse$plot_diff_cladogram(use_taxa_num = 200, 
+                          use_feature_num = 50, 
+                          clade_label_level = 5, 
+                          group_order = c("CW", "IW", "TW"))
+
+
+use_labels <- c("c__Deltaproteobacteria", "c__Actinobacteria", "o__Rhizobiales", "p__Proteobacteria", "p__Bacteroidetes", 
+                "o__Micrococcales", "p__Acidobacteria", "p__Verrucomicrobia", "p__Firmicutes", 
+                "p__Chloroflexi", "c__Acidobacteria", "c__Gammaproteobacteria", "c__Betaproteobacteria", "c__KD4-96",
+                "c__Bacilli", "o__Gemmatimonadales", "f__Gemmatimonadaceae", "o__Bacillales", "o__Rhodobacterales")
+
+lefse$plot_diff_cladogram(use_taxa_num = 200, 
+                       use_feature_num = 50, 
+                       select_show_labels = use_labels)
+
