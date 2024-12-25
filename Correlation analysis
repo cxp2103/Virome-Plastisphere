@@ -1,0 +1,11 @@
+library(Hmisc)
+Cgene <- read.csv('virus_PBS4.csv', row.name = 1, check.names = FALSE)
+vOTU <- read.csv('host_PBS4.csv', row.name = 1, check.names = FALSE)
+ab_corr <- rcorr(as.matrix(vOTU), as.matrix(Cgene), type = 'pearson')#可以改成spearman
+r3 <- ab_corr$r
+p3 <- ab_corr$P
+#p1 <- p.adjust(p1, method = 'BH')
+r3 <- r3[colnames(vOTU),colnames(Cgene)]
+p3 <- p3[colnames(vOTU),colnames(Cgene)]
+write.csv(p3,"p-virus&host_PBS4.csv", row.names = T)
+write.csv(r3,"r-virus&host_PBS4.csv", row.names = T)
