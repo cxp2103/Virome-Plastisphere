@@ -1,0 +1,36 @@
+library(tidyverse)
+library(readxl)
+library(scatterpie)
+
+world.dat<-map_data("world")
+
+ggplot() +
+  geom_polygon(data=world.dat,aes(x=long,y=lat,group=group),
+               fill="#dedede")+
+  theme_bw()+
+  scale_y_continuous(expand = expansion(mult=c(0,0)))+
+  scale_x_continuous(expand = expansion(add=c(0,0)))+
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank())+
+  labs(x=NULL,y=NULL)-> world.map
+
+
+
+#添加饼图&采样点
+fig1a.dat<-read_excel("160_sample.xlsx",
+                      sheet = "Fig1A")
+dat <- read.delim('AMGs_pie.txt', sep = '\t')
+dat <- reshape2::melt(dat, id = c('site', 'lon', 'lat', 'total'))
+
+world.map + 
+  geom_scatterpie(data = dat, aes(x = lon,y = lat, group = site, r = 6), cols = 'variable', long_format = TRUE) + 
+  scale_fill_manual(values = c( '#E6CBB2', '#D4AFBA', '#EFE7CE','#D9D1C0', '#E2EDF1', '#EAD8B2','#C7D9B4','#8EB9D3','#CCE7DF')) + 
+  labs(x = NULL, y = NULL, fill = 'species')+
+  geom_point(data=fig1a.dat,aes(x=Longitude,y=Latitude,color=Tax),size=4,alpha=0.9)+
+  scale_color_manual(values = c("SP"="#E4BF80",
+                                "WP"="#4393C3"),
+                     name="Type")+
+  guides(color=guide_legend(override.aes = list(size=5)))+
+  theme(legend.position = c(0.1,0.3),)
